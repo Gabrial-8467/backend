@@ -3,6 +3,7 @@ import express from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
 import cookieParser from 'cookie-parser'
+import path from 'node:path'
 import { env } from './config/env.js'
 import { requestLogger } from './common/middleware/logger.middleware.js'
 import { requestContextMiddleware } from './common/context/request-context.js'
@@ -11,6 +12,7 @@ import { errorMiddleware } from './common/middleware/error.middleware.js'
 import dealRoutes from "./modules/deals/deal.routes.js";
 import authRoutes from './modules/auth/auth.routes.js'
 import userRoutes from './modules/users/user.routes.js'
+import userDetailRoutes from './modules/users/user-detail.routes.js'
 import leadRoutes from './modules/leads/lead.routes.js'
 import permissionRoutes from './modules/permission/permission.routes.js'
 import taskRoutes from './modules/tasks/task.routes.js'
@@ -32,6 +34,7 @@ import facebookWebhookRoutes from './modules/facebook/webhook.routes.js'
 import expenseRoutes from './modules/expenses/expense.routes.js'
 import invoiceRoutes from './modules/invoices/invoice.routes.js'
 import attendanceRoutes from './modules/attendance/attendance.routes.js'
+import leaveRoutes from './modules/leaves/leave.routes.js'
 
 
 const app = express()
@@ -75,6 +78,7 @@ app.use(
 app.use(express.json({ limit: '15mb' }))
 app.use(express.urlencoded({ extended: true, limit: '15mb' }))
 app.use(cookieParser())
+app.use('/uploads', express.static(path.resolve(process.cwd(), 'uploads')))
 app.use(requestLogger)
 
 app.get('/api/v1/health', (_req, res) => {
@@ -84,6 +88,7 @@ app.get('/api/v1/health', (_req, res) => {
   })
 })
 app.use('/api/v1/auth', authRoutes)
+app.use('/api/v1/users', userDetailRoutes)
 app.use('/api/v1/users', userRoutes)
 app.use('/api/v1/leads', leadRoutes)
 app.use('/api/v1/permissions', permissionRoutes)
@@ -107,6 +112,7 @@ app.use('/api/v1/webhooks/facebook', facebookWebhookRoutes)
 app.use('/api/v1/expenses', expenseRoutes)
 app.use('/api/v1/invoices', invoiceRoutes)
 app.use('/api/v1/attendance', attendanceRoutes)
+app.use('/api/v1/leaves', leaveRoutes)
 app.use(notFoundMiddleware)
 app.use(errorMiddleware)
 
